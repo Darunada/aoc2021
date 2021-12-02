@@ -11,7 +11,7 @@ pub fn run() {
     let lines1 = contents.lines();
     println!("part 1: {}", part1(lines1));
 
-    let part2_file = "src/day1/input2.txt";
+    let part2_file = "src/day1/input.txt";
     let contents = fs::read_to_string(part2_file)
         .expect("Something went wrong reading the file");
 
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn part2_works() {
-        let filename = "src/day1/test2.txt";
+        let filename = "src/day1/test.txt";
 
         let contents = fs::read_to_string(filename)
             .expect("Something went wrong reading the file");
