@@ -90,7 +90,7 @@ fn part2(lines: Lines) -> u32 {
 mod tests {
     use std::fs;
 
-    use crate::day1::*;
+    
     use crate::day2::{get_moves, part1, part2};
     use crate::day2::Move::{Down, Forward, Up};
 
