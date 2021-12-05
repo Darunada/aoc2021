@@ -206,17 +206,6 @@ impl Tournament {
     }
 }
 
-
-// #[derive(Clone, PartialEq)]
-// struct ReportLine(usize);
-//
-// impl Debug for ReportLine {
-//     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{:05b}", self.0)
-//     }
-// }
-
-
 fn parse_input(input: &Lines, board_size: u32) -> (Vec<u32>, Vec<BingoBoard>) {
     let mut input = input.clone().peekable();
     let calls = input.next().unwrap().split(',').map(|i| i.parse::<u32>().unwrap()).collect::<Vec<u32>>();
@@ -612,8 +601,7 @@ mod tests {
                 winning_boards.iter().for_each(|b| {
                     println!("{}", b);
                     println!("calls: {} score: {}", b.calls, b.score().unwrap());
-                }
-                );
+                });
 
                 let last_winner = winning_boards.pop().unwrap();
                 assert_eq!(last_winner.score(), Ok(1924));
