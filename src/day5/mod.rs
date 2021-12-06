@@ -11,24 +11,34 @@ pub fn run() {
         .expect("Something went wrong reading the file");
 
     let lines = contents.lines();
-    let sea_floor = parse_input(lines.clone(), 1000);
+    let sea_floor1 = parse_input(lines.clone(), 1000, false);
 
-    let dangerous_areas = sea_floor.0.iter()
+    let dangerous_areas = sea_floor1.0.iter()
         .flatten()
         .filter(|&c| *c >= 2u32)
         .count();
     println!("part 1: {}", dangerous_areas);
+
+    let sea_floor2 = parse_input(lines.clone(), 1000, false);
+
+    let dangerous_areas = sea_floor2.0.iter()
+        .flatten()
+        .filter(|&c| *c >= 2u32)
+        .count();
+    println!("part 2: {}", dangerous_areas);
 }
 
 #[derive(Debug, PartialEq)]
 struct SeaFloor(Vec<Vec<u32>>);
 
 impl SeaFloor {
-    fn map_vent(&mut self, vent: Range) {
+    fn map_vent(&mut self, vent: Range, &use_diagonals: bool) {
         if vent.is_cardinal() {
             for location in vent.locations() {
                 self.0[location.1][location.0] += 1
             }
+        } else if use_diagonals {
+            let x =
         }
     }
 
@@ -97,7 +107,7 @@ impl Range {
     }
 }
 
-fn parse_input(mut lines: Lines, width: usize) -> SeaFloor {
+fn parse_input(mut lines: Lines, width: usize, use_diagonals: bool) -> SeaFloor {
     let mut sea_floor = SeaFloor(vec![vec![0; width]; width]);
 
     for vent in lines {
@@ -105,7 +115,7 @@ fn parse_input(mut lines: Lines, width: usize) -> SeaFloor {
             .map(|coord| coord.parse::<Coordinate>().unwrap().into())
             .collect();
 
-        sea_floor.map_vent(Range::from(coords[0], coords[1]));
+        sea_floor.map_vent(Range::from(coords[0], coords[1]), use_diagonals);
     }
 
     sea_floor
@@ -128,7 +138,7 @@ mod tests {
             .expect("Something went wrong reading the file");
 
         let lines = contents.lines();
-        let sea_floor = parse_input(lines.clone(), 10);
+        let sea_floor = parse_input(lines.clone(), 10, false);
         let expected = SeaFloor(vec![
             vec![0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
             vec![0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
@@ -144,6 +154,32 @@ mod tests {
 
         assert_eq!(sea_floor, expected);
     }
+
+    #[test]
+    fn it_parses_test_input_with_diagonals() {
+        let filename = "src/day5/test.txt";
+
+        let contents = fs::read_to_string(filename)
+            .expect("Something went wrong reading the file");
+
+        let lines = contents.lines();
+        let sea_floor = parse_input(lines.clone(), 10, true);
+        let expected = SeaFloor(vec![
+            vec![1, 0, 1, 0, 0, 0, 0, 1, 1, 0],
+            vec![0, 1, 1, 1, 0, 0, 0, 2, 0, 0],
+            vec![0, 0, 2, 0, 1, 0, 1, 1, 1, 0],
+            vec![0, 0, 0, 2, 0, 2, 0, 2, 0, 0],
+            vec![0, 1, 1, 2, 3, 1, 3, 2, 1, 1],
+            vec![0, 0, 0, 1, 0, 2, 0, 0, 0, 0],
+            vec![0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            vec![0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+            vec![1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            vec![2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+        ]);
+
+        assert_eq!(sea_floor, expected);
+    }
+
 
 
     #[test]
