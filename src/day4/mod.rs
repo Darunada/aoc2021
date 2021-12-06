@@ -1,7 +1,6 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::fs;
-
-use std::str::{Lines};
+use std::str::Lines;
 
 pub fn run() {
     let part1_file = "src/day4/input.txt";
@@ -69,9 +68,9 @@ impl BingoCell {
 impl Display for BingoCell {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.1 {
-            write!(f, "({}) ", self.0)
+            write!(f, "({:2}) ", self.0)
         } else {
-            write!(f, " {}  ", self.0)
+            write!(f, " {:2}  ", self.0)
         }
     }
 }
