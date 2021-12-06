@@ -19,7 +19,7 @@ pub fn run() {
         .count();
     println!("part 1: {}", dangerous_areas);
 
-    let sea_floor2 = parse_input(lines.clone(), 1000, false);
+    let sea_floor2 = parse_input(lines.clone(), 1000, true);
 
     let dangerous_areas = sea_floor2.0.iter()
         .flatten()
@@ -32,13 +32,11 @@ pub fn run() {
 struct SeaFloor(Vec<Vec<u32>>);
 
 impl SeaFloor {
-    fn map_vent(&mut self, vent: Range, &use_diagonals: bool) {
-        if vent.is_cardinal() {
+    fn map_vent(&mut self, vent: Range, use_diagonals: bool) {
+        if vent.is_cardinal() || use_diagonals {
             for location in vent.locations() {
                 self.0[location.1][location.0] += 1
             }
-        } else if use_diagonals {
-            let x =
         }
     }
 
@@ -68,7 +66,7 @@ impl Display for SeaFloor {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 struct Coordinate(usize, usize);
 
 impl FromStr for Coordinate {
@@ -87,18 +85,65 @@ struct Range(Coordinate, Coordinate);
 
 impl Range {
     fn from(c1: Coordinate, c2: Coordinate) -> Range {
-        Range(Coordinate(min!(c1.0, c2.0), min!(c1.1, c2.1)), Coordinate(max!(c1.0, c2.0), max!(c1.1, c2.1)))
+        let mut range = Range(c1, c2);
+        // same x
+        if c1.0 == c2.0 {
+            if c2.1 < c1.1 {
+                range = range.flip();
+            }
+        } else if c1.1 == c2.1 {
+            if c2.0 < c1.0 {
+                range = range.flip();
+            }
+        } else  {
+            // put least x in c1
+            if c2.0 < c1.0 {
+                range = range.flip();
+            }
+        }
+
+        range
+        // let cardinal = Range(Coordinate(min!(c1.0, c2.0), min!(c1.1, c2.1)), Coordinate(max!(c1.0, c2.0), max!(c1.1, c2.1)));
+        // if cardinal.is_cardinal() {
+        //     return cardinal;
+        // }
+        //
+        // Range(c1, c2)
+    }
+
+    fn flip(&self) -> Range {
+        Range(self.1, self.0)
     }
 
     fn locations(&self) -> Vec<Coordinate> {
         let mut coordinates = vec![];
 
-        for x in self.0.0..=self.1.0 {
-            for y in self.0.1..=self.1.1 {
-                coordinates.push(Coordinate(x, y));
+        if self.is_cardinal() {
+            for x in self.0.0..=self.1.0 {
+                for y in self.0.1..=self.1.1 {
+                    coordinates.push(Coordinate(x, y));
+                }
+            }
+        } else {
+            let mut x = self.0.0;
+            let mut y = self.0.1;
+            let incrementing_y = self.0.1 < self.1.1;
+            loop {
+                let coordinate = Coordinate(x, y);
+
+                coordinates.push(coordinate);
+                if coordinate == self.1 {
+                    break;
+                }
+
+                x += 1;
+                if incrementing_y {
+                       y += 1;
+                } else {
+                    y -= 1;
+                }
             }
         }
-
         coordinates
     }
 
@@ -168,7 +213,7 @@ mod tests {
             vec![1, 0, 1, 0, 0, 0, 0, 1, 1, 0],
             vec![0, 1, 1, 1, 0, 0, 0, 2, 0, 0],
             vec![0, 0, 2, 0, 1, 0, 1, 1, 1, 0],
-            vec![0, 0, 0, 2, 0, 2, 0, 2, 0, 0],
+            vec![0, 0, 0, 1, 0, 2, 0, 2, 0, 0],
             vec![0, 1, 1, 2, 3, 1, 3, 2, 1, 1],
             vec![0, 0, 0, 1, 0, 2, 0, 0, 0, 0],
             vec![0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
@@ -176,6 +221,8 @@ mod tests {
             vec![1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
             vec![2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
         ]);
+        println!("{}", sea_floor);
+        println!("{}", expected);
 
         assert_eq!(sea_floor, expected);
     }
@@ -190,7 +237,7 @@ mod tests {
             .expect("Something went wrong reading the file");
 
         let lines = contents.lines();
-        let sea_floor = parse_input(lines.clone(), 10);
+        let sea_floor = parse_input(lines.clone(), 10, false);
 
         let dangerous_areas = sea_floor.0.iter()
             .flatten()
@@ -207,6 +254,12 @@ mod tests {
             .expect("Something went wrong reading the file");
 
         let lines = contents.lines();
-        // let (calls, bingo_boards) = parse_input(&lines, 5);
+        let sea_floor = parse_input(lines.clone(), 10, true);
+
+        let dangerous_areas = sea_floor.0.iter()
+            .flatten()
+            .filter(|&c| *c >= 2u32)
+            .count();
+        assert_eq!(dangerous_areas, 12);
     }
 }
