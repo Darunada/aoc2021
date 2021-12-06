@@ -103,12 +103,6 @@ impl Range {
         }
 
         range
-        // let cardinal = Range(Coordinate(min!(c1.0, c2.0), min!(c1.1, c2.1)), Coordinate(max!(c1.0, c2.0), max!(c1.1, c2.1)));
-        // if cardinal.is_cardinal() {
-        //     return cardinal;
-        // }
-        //
-        // Range(c1, c2)
     }
 
     fn flip(&self) -> Range {
@@ -172,8 +166,6 @@ mod tests {
     use std::fs;
 
     use crate::day5::{parse_input, SeaFloor};
-
-    fn it_works() {}
 
     #[test]
     fn it_parses_test_input() {
