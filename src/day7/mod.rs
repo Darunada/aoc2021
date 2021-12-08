@@ -38,20 +38,10 @@ impl Crabs {
 
     fn find_simple_maneuver(&self) -> (u32, u32) {
         let max_position = *self.0.iter().max().unwrap();
-        let min_position = *self.0.iter().min().unwrap();
-        let ave = self.0.iter().sum::<u32>() / self.0.len() as u32;
-        //println!("{}", ave);
-
-        // the result is always in the smaller half of positions
-        // not sure if this is safe for this calculation but it works
-        let mut interval = ave..max_position;
-        if max_position - ave > ave - min_position {
-            interval = min_position..ave;
-        }
 
         let mut least: (u32, u32) = (0, self.simple_fuel_cost(0));
 
-        for i in interval {
+        for i in 0..max_position {
             if self.simple_fuel_cost(i) < least.1 {
                 least = (i, self.simple_fuel_cost(i));
             }
@@ -63,28 +53,14 @@ impl Crabs {
 
     fn find_better_maneuver(&self) -> (u32, u32) {
         let max_position = *self.0.iter().max().unwrap();
-        let min_position = *self.0.iter().min().unwrap();
-        let ave = self.0.iter().sum::<u32>() / self.0.len() as u32;
-        //println!("{}", ave);
-
-        // the result is always in the smaller half of positions
-        // not sure if this is safe for this calculation but it works
-        // (the answer happens to be the ave - 1)
-        let mut interval = ave..max_position;
-        if max_position - ave > ave - min_position {
-            interval = min_position..ave;
-        }
-
-
         let mut least: (u32, u32) = (0, self.better_fuel_cost(0));
 
-        for i in interval {
+        for i in 0..max_position {
             if self.better_fuel_cost(i) < least.1 {
                 least = (i, self.better_fuel_cost(i));
             }
         }
 
-        //println!("{:?}", least);
         least
     }
 
@@ -92,7 +68,9 @@ impl Crabs {
         self.0.iter()
             .map(|&c| {
                 let num_steps = (c as i32 - direction as i32).abs() as u32;
-                (0u32..num_steps + 1).sum::<u32>()
+                let cost = num_steps * (num_steps + 1)/2;
+                //println!("c: {} direction: {} num_steps: {} cost: {}", c, direction, num_steps, cost);
+                cost
             })
             .sum()
     }
