@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display, Error, Formatter};
 use std::fs;
 use std::str::{FromStr, Lines};
 
-use min_max::*;
+
 
 pub fn run() {
     let file = "src/day5/input.txt";
@@ -59,10 +59,10 @@ impl Display for SeaFloor {
                     write!(f, "{}", self.0[y][x]).unwrap();
                 }
             }
-            writeln!(f, "").unwrap();
+            writeln!(f).unwrap();
         }
 
-        writeln!(f, "")
+        writeln!(f)
     }
 }
 
@@ -73,7 +73,7 @@ impl FromStr for Coordinate {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let n: Vec<usize> = s.split(",")
+        let n: Vec<usize> = s.split(',')
             .map(|a| a.parse::<usize>().unwrap())
             .collect();
         Ok(Coordinate(n[0], n[1]))
@@ -89,10 +89,6 @@ impl Range {
         // same x
         if c1.0 == c2.0 {
             if c2.1 < c1.1 {
-                range = range.flip();
-            }
-        } else if c1.1 == c2.1 {
-            if c2.0 < c1.0 {
                 range = range.flip();
             }
         } else  {
@@ -146,12 +142,12 @@ impl Range {
     }
 }
 
-fn parse_input(mut lines: Lines, width: usize, use_diagonals: bool) -> SeaFloor {
+fn parse_input(lines: Lines, width: usize, use_diagonals: bool) -> SeaFloor {
     let mut sea_floor = SeaFloor(vec![vec![0; width]; width]);
 
     for vent in lines {
         let coords: Vec<Coordinate> = vent.split(" -> ")
-            .map(|coord| coord.parse::<Coordinate>().unwrap().into())
+            .map(|coord| coord.parse::<Coordinate>().unwrap())
             .collect();
 
         sea_floor.map_vent(Range::from(coords[0], coords[1]), use_diagonals);

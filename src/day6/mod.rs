@@ -1,8 +1,6 @@
-use std::fmt::{Debug, Display, Error, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::fs;
-use std::str::{FromStr, Lines};
-
-use min_max::*;
+use std::str::{Lines};
 
 pub fn run() {
     let file = "src/day6/input.txt";
@@ -72,7 +70,7 @@ impl Sea {
 impl Display for Sea {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         self.0.iter().enumerate().for_each(|(age, num)| {
-            writeln!(f, "age: {}, num: {}", age, num);
+            writeln!(f, "age: {}, num: {}", age, num).unwrap();
         });
 
         write!(f, "")
@@ -82,7 +80,7 @@ impl Display for Sea {
 fn parse_input(mut lines: Lines) -> Sea {
     Sea::from(lines.next()
         .unwrap()
-        .split(",")
+        .split(',')
         .map(|n| { n.parse::<u32>().unwrap() })
         .collect::<Vec<u32>>())
 }
@@ -169,7 +167,7 @@ mod tests {
         let lines = contents.lines();
         let mut sea = parse_input(lines.clone());
 
-        for i in 0u32..256 {
+        for _i in 0u32..256 {
             sea.day();
             // println!("Day {}: {}", i, sea);
         }
