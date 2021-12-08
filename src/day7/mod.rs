@@ -1,7 +1,7 @@
-
-use std::{fs};
-use std::fmt::{Debug};
-use std::str::{Lines};
+use std::cmp::{max, min};
+use std::fmt::Debug;
+use std::fs;
+use std::str::Lines;
 
 pub fn run() {
     let file = "src/day7/input.txt";
@@ -16,12 +16,6 @@ pub fn run() {
 
     let maneuver = crabs.find_better_maneuver();
     println!("part 2: {}", maneuver.1);
-
-    //
-    // for _ in 80u32..256 {
-    //     sea.day();
-    // }
-    // println!("part 2: {}", sea.population());
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -43,26 +37,54 @@ impl Crabs {
     }
 
     fn find_simple_maneuver(&self) -> (u32, u32) {
+        let max_position = *self.0.iter().max().unwrap();
+        let min_position = *self.0.iter().min().unwrap();
+        let ave = self.0.iter().sum::<u32>() / self.0.len() as u32;
+        //println!("{}", ave);
+
+        // the result is always in the smaller half of positions
+        // not sure if this is safe for this calculation but it works
+        let mut interval = ave..max_position;
+        if max_position - ave > ave - min_position {
+            interval = min_position..ave;
+        }
+
         let mut least: (u32, u32) = (0, self.simple_fuel_cost(0));
 
-        for i in 1..1000 {
+        for i in interval {
             if self.simple_fuel_cost(i) < least.1 {
                 least = (i, self.simple_fuel_cost(i));
             }
         }
 
-       least
+        //println!("{:?}", least);
+        least
     }
 
     fn find_better_maneuver(&self) -> (u32, u32) {
+        let max_position = *self.0.iter().max().unwrap();
+        let min_position = *self.0.iter().min().unwrap();
+        let ave = self.0.iter().sum::<u32>() / self.0.len() as u32;
+        //println!("{}", ave);
+
+        // the result is always in the smaller half of positions
+        // not sure if this is safe for this calculation but it works
+        // (the answer happens to be the ave - 1)
+        let mut interval = ave..max_position;
+        if max_position - ave > ave - min_position {
+            interval = min_position..ave;
+        }
+
+
         let mut least: (u32, u32) = (0, self.better_fuel_cost(0));
 
-        for i in 1..1000 {
+        for i in interval {
             if self.better_fuel_cost(i) < least.1 {
                 least = (i, self.better_fuel_cost(i));
             }
         }
 
+        //println!("{:?}", least);
         least
     }
 
@@ -70,7 +92,7 @@ impl Crabs {
         self.0.iter()
             .map(|&c| {
                 let num_steps = (c as i32 - direction as i32).abs() as u32;
-                (0u32..num_steps).sum::<u32>() + num_steps
+                (0u32..num_steps + 1).sum::<u32>()
             })
             .sum()
     }
@@ -150,24 +172,4 @@ mod tests {
         let maneuver = crabs.find_better_maneuver();
         assert_eq!(maneuver, (5, 168));
     }
-
-
-    //
-    //
-    // #[test]
-    // fn part2_works() {
-    //     let part2_file = "src/day6/test.txt";
-    //
-    //     let contents = fs::read_to_string(part2_file)
-    //         .expect("Something went wrong reading the file");
-    //
-    //     let lines = contents.lines();
-    //     let mut sea = parse_input(lines.clone());
-    //
-    //     for i in 0u32..256 {
-    //         sea.day();
-    //         // println!("Day {}: {}", i, sea);
-    //     }
-    //     assert_eq!(sea.population(), 26984457539);
-    // }
 }
