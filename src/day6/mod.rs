@@ -16,54 +16,75 @@ pub fn run() {
     for _ in 0u32..80 {
         sea.day();
     }
-    println!("part 1: {}", sea.0.len());
+    println!("part 1: {}", sea.population());
+
+    for _ in 80u32..256 {
+        sea.day();
+    }
+    println!("part 2: {}", sea.population());
 }
 
-#[derive(Debug, PartialEq)]
-struct LanternFish(u32);
+#[derive(Debug, Clone, PartialEq)]
+struct Sea(Vec<u64>);
 
-impl From<u32> for LanternFish {
-    fn from(num: u32) -> Self {
-        LanternFish(num)
+impl From<Vec<u32>> for Sea {
+    fn from(fish: Vec<u32>) -> Sea {
+        let mut sea = Sea::new();
+
+        for f in fish {
+            sea.0[f as usize] += 1;
+        }
+
+        sea
     }
 }
 
-#[derive(Debug, PartialEq)]
-struct Sea(Vec<LanternFish>);
-
 impl Sea {
-    fn day(&mut self) {
-        let mut new_fishes = vec![];
-        self.0.iter_mut().for_each(|fish| {
-            if fish.0 == 0 {
-                new_fishes.push(LanternFish(8));
-                fish.0 = 6;
-            } else {
-                fish.0 -= 1;
-            }
-        });
+    fn new() -> Sea {
+        // 0-8 are valid ages
+        Sea(vec![0u64; 9])
+    }
 
-        self.0.append(&mut new_fishes);
+    fn day(&mut self) {
+        // remove the 0s
+        let (&reproducing, rest) = self.0.split_first().unwrap();
+        self.0 = rest.to_vec();
+
+        // println!("reproducing: \n{}", reproducing);
+        // println!("rest: \n{}", self);
+
+        // 0s reproduce, become 8s
+        self.0.push(reproducing);
+
+        // reproducing are replaced with 6s
+        self.0[6] += reproducing;
+    }
+
+    fn population(&self) -> u64 {
+        let mut population = 0u64;
+        for age in self.0.iter() {
+            population += age;
+        }
+        population
     }
 }
 
 impl Display for Sea {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        for fish in &self.0 {
-            write!(f, "{}", fish.0);
-        }
+        self.0.iter().enumerate().for_each(|(age, num)| {
+            writeln!(f, "age: {}, num: {}", age, num);
+        });
 
-        writeln!(f, "")
+        write!(f, "")
     }
 }
 
 fn parse_input(mut lines: Lines) -> Sea {
-    Sea(lines.next()
+    Sea::from(lines.next()
         .unwrap()
         .split(",")
         .map(|n| { n.parse::<u32>().unwrap() })
-        .map(|n| { n.into() })
-        .collect())
+        .collect::<Vec<u32>>())
 }
 
 
@@ -71,7 +92,7 @@ fn parse_input(mut lines: Lines) -> Sea {
 mod tests {
     use std::fs;
 
-    use crate::day6::{LanternFish, parse_input, Sea};
+    use crate::day6::{parse_input, Sea};
 
     #[test]
     fn it_parses_test_input() {
@@ -82,7 +103,7 @@ mod tests {
 
         let lines = contents.lines();
         let sea = parse_input(lines.clone());
-        let expected = Sea(vec![3.into(), 4.into(), 3.into(), 1.into(), 2.into()]);
+        let expected = Sea::from(vec![3, 4, 3, 1, 2]);
         println!("{}", sea);
         println!("{}", expected);
 
@@ -91,19 +112,26 @@ mod tests {
 
     #[test]
     fn fishes_decrement() {
-        let mut sea = Sea(vec![LanternFish(1)]);
+        let mut sea = Sea::new();
+        println!("{}", sea);
+        sea.0[1] = 2;
+        println!("{}", sea);
         sea.day();
-        assert_eq!(sea.0.first().unwrap().0, 0);
-        assert_eq!(sea.0.len(), 1);
+
+        println!("{}", sea);
+        assert_eq!(sea.0[1], 0);
+        assert_eq!(sea.0[0], 2);
     }
 
     #[test]
     fn fishes_reproduce() {
-        let mut sea = Sea(vec![LanternFish(0)]);
+        let mut sea = Sea::new();
+        sea.0[0] = 1;
         sea.day();
-        assert_eq!(sea.0.first().unwrap().0, 6);
-        assert_eq!(sea.0.len(), 2);
-        assert_eq!(sea.0.get(1).unwrap().0, 8);
+        assert_eq!(sea.0[0], 0);
+        assert_eq!(sea.0[8], 1);
+        assert_eq!(sea.0[6], 1);
+        assert_eq!(sea.population(), 2)
     }
 
     #[test]
@@ -116,10 +144,18 @@ mod tests {
         let lines = contents.lines();
         let mut sea = parse_input(lines.clone());
 
-        for i in 0u32..80 {
+        assert_eq!(sea.population(), 5);
+        sea.day();
+        assert_eq!(sea.population(), 5);
+        sea.day();
+        assert_eq!(sea.population(), 6);
+
+        for i in 2u32..80 {
             sea.day();
+            println!("Day {}: {}", i, sea);
         }
-        assert_eq!(sea.0.len(), 5934);
+        assert_eq!(sea.population(), 5934);
+        panic!();
     }
 
 
@@ -135,7 +171,8 @@ mod tests {
 
         for i in 0u32..256 {
             sea.day();
+            // println!("Day {}: {}", i, sea);
         }
-        assert_eq!(sea.0.len(), 26984457539);
+        assert_eq!(sea.population(), 26984457539);
     }
 }
