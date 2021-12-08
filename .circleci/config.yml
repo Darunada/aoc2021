@@ -1,0 +1,21 @@
+version: 2.1
+
+workflows:
+  version: 2
+  rust:
+    jobs:
+      - build:
+          context: [aws]
+
+jobs:
+  build:
+    executor: lealearnstocode/rust
+    steps:
+      - checkout
+      - lealearnstocode/with-rust:
+          steps:
+            - run: |
+                just check
+                just test
+orbs:
+  lealearnstocode: lealearnstocode/build-orb@0.2.0

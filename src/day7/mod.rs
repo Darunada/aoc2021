@@ -1,4 +1,3 @@
-use std::cmp::{max, min};
 use std::fmt::Debug;
 use std::fs;
 use std::str::Lines;
@@ -68,9 +67,9 @@ impl Crabs {
         self.0.iter()
             .map(|&c| {
                 let num_steps = (c as i32 - direction as i32).abs() as u32;
-                let cost = num_steps * (num_steps + 1)/2;
+                // let cost = num_steps * (num_steps + 1)/2;
                 //println!("c: {} direction: {} num_steps: {} cost: {}", c, direction, num_steps, cost);
-                cost
+                num_steps * (num_steps + 1)/2
             })
             .sum()
     }
