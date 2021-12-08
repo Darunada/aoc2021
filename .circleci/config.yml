@@ -15,7 +15,7 @@ jobs:
       - lealearnstocode/with-rust:
           steps:
             - run: |
-                just check
+                just check_ci
                 just test
 orbs:
   lealearnstocode: lealearnstocode/build-orb@0.2.0
