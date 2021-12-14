@@ -11,22 +11,20 @@ enum Move {
 pub fn run() {
     let part1_file = "src/day2/input.txt";
 
-    let contents = fs::read_to_string(part1_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
     let lines1 = contents.lines();
     println!("part 1: {}", part1(lines1));
 
     let part2_file = "src/day2/input.txt";
-    let contents = fs::read_to_string(part2_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part2_file).expect("Something went wrong reading the file");
 
     let lines2 = contents.lines();
     println!("part 2: {}", part2(lines2));
 }
 
 fn get_moves(mut lines: Lines) -> Vec<Move> {
-    let mut moves: Vec<Move> = vec!();
+    let mut moves: Vec<Move> = vec![];
 
     loop {
         let line = lines.next();
@@ -77,7 +75,7 @@ fn part2(lines: Lines) -> u32 {
             Move::Forward(d) => {
                 hpos += d;
                 vpos += d * aim;
-            },
+            }
             Move::Down(d) => aim += d,
             Move::Up(d) => aim -= d,
         }
@@ -90,16 +88,14 @@ fn part2(lines: Lines) -> u32 {
 mod tests {
     use std::fs;
 
-    
-    use crate::day2::{get_moves, part1, part2};
     use crate::day2::Move::{Down, Forward, Up};
+    use crate::day2::{get_moves, part1, part2};
 
     #[test]
     fn it_gets_moves() {
         let filename = "src/day2/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
 
@@ -116,8 +112,7 @@ mod tests {
     fn part1_works() {
         let filename = "src/day2/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         assert_eq!(part1(lines.clone()), 150);
@@ -127,8 +122,7 @@ mod tests {
     fn part2_works() {
         let filename = "src/day2/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         assert_eq!(part2(lines.clone()), 900);

@@ -1,19 +1,16 @@
 use std::fs;
 use std::str::Lines;
 
-
 pub fn run() {
     let part1_file = "src/day1/input.txt";
 
-    let contents = fs::read_to_string(part1_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
     let lines1 = contents.lines();
     println!("part 1: {}", part1(lines1));
 
     let part2_file = "src/day1/input.txt";
-    let contents = fs::read_to_string(part2_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part2_file).expect("Something went wrong reading the file");
 
     let lines2 = contents.lines();
     println!("part 2: {}", part2(lines2));
@@ -74,8 +71,7 @@ mod tests {
     fn part1_works() {
         let filename = "src/day1/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         assert_eq!(part1(lines.clone()), 7);
@@ -85,8 +81,7 @@ mod tests {
     fn part2_works() {
         let filename = "src/day1/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         assert_eq!(part2(lines.clone()), 5);

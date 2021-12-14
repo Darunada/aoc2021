@@ -5,8 +5,7 @@ use std::str::Lines;
 pub fn run() {
     let part1_file = "src/day4/input.txt";
 
-    let contents = fs::read_to_string(part1_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
     let lines = contents.lines();
     let (calls, bingo_boards) = parse_input(&lines, 5);
@@ -17,12 +16,10 @@ pub fn run() {
     for call in calls.clone() {
         let winners = tournament1.call(call);
         if winners > 0 {
-            tournament1.winners()
-                .iter()
-                .for_each(|b| {
-                    //println!("{}", b);
-                    println!("part 1: {}", b.score().unwrap());
-                });
+            tournament1.winners().iter().for_each(|b| {
+                //println!("{}", b);
+                println!("part 1: {}", b.score().unwrap());
+            });
             break;
         }
     }
@@ -34,7 +31,6 @@ pub fn run() {
         if winners == bingo_boards.len() as u32 {
             let mut winning_boards = tournament2.winners();
             winning_boards.sort_by(|a, b| a.calls.cmp(&b.calls));
-
 
             let last_winner = winning_boards.pop().unwrap();
             //println!("{}", last_winner);
@@ -79,7 +75,6 @@ impl Display for BingoCell {
 struct BingoBoard {
     calls: u32,
     winning_number: Option<u32>,
-    score: Option<u32>,
     row_width: u32,
     col_height: u32,
     board: Vec<BingoCell>,
@@ -87,9 +82,7 @@ struct BingoBoard {
 
 impl BingoBoard {
     fn from(board: Vec<u32>, row_width: u32, col_height: u32) -> BingoBoard {
-        let cells = board.into_iter()
-            .map(BingoCell::from)
-            .collect();
+        let cells = board.into_iter().map(BingoCell::from).collect();
 
         BingoBoard {
             row_width,
@@ -158,7 +151,8 @@ impl BingoBoard {
         }
 
         // sum unmarked cells
-        let unmarked: u32 = self.board
+        let unmarked: u32 = self
+            .board
             .iter()
             .filter(|&cell| !cell.is_marked())
             .map(|cell| cell.0)
@@ -185,36 +179,44 @@ struct Tournament(Vec<BingoBoard>);
 
 impl Tournament {
     fn call(&mut self, value: u32) -> u32 {
-        self.0
-            .iter_mut()
-            .for_each(|board| {
-                board.call(value);
-            });
+        self.0.iter_mut().for_each(|board| {
+            board.call(value);
+        });
 
-        self.0
-            .iter()
-            .filter(|board| board.has_won())
-            .count() as u32
+        self.0.iter().filter(|board| board.has_won()).count() as u32
     }
 
     fn winners(&self) -> Vec<BingoBoard> {
         self.0
             .iter()
-            .filter(|board| board.has_won()).cloned()
+            .filter(|board| board.has_won())
+            .cloned()
             .collect()
     }
 }
 
 fn parse_input(input: &Lines, board_size: u32) -> (Vec<u32>, Vec<BingoBoard>) {
     let mut input = input.clone().peekable();
-    let calls = input.next().unwrap().split(',').map(|i| i.parse::<u32>().unwrap()).collect::<Vec<u32>>();
+    let calls = input
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|i| i.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>();
     let _whitespace = input.next().unwrap();
 
     let mut boards: Vec<BingoBoard> = vec![];
     loop {
         let mut board: Vec<Vec<u32>> = vec![];
         for _ in 0..board_size {
-            board.push(input.next().unwrap().split_ascii_whitespace().map(|i| i.parse::<u32>().unwrap()).collect::<Vec<u32>>());
+            board.push(
+                input
+                    .next()
+                    .unwrap()
+                    .split_ascii_whitespace()
+                    .map(|i| i.parse::<u32>().unwrap())
+                    .collect::<Vec<u32>>(),
+            );
         }
 
         let bingo_board = BingoBoard::from(board.concat(), board_size, board_size);
@@ -234,7 +236,7 @@ fn parse_input(input: &Lines, board_size: u32) -> (Vec<u32>, Vec<BingoBoard>) {
 mod tests {
     use std::fs;
 
-    use crate::day4::{BingoBoard, BingoCell, parse_input, Tournament};
+    use crate::day4::{parse_input, BingoBoard, BingoCell, Tournament};
 
     #[test]
     fn bingo_cell_starts_unmarked() {
@@ -278,7 +280,13 @@ mod tests {
         let mut board = BingoBoard {
             row_width: 5,
             col_height: 1,
-            board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(5), BingoCell::from(5)],
+            board: vec![
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(5),
+                BingoCell::from(5),
+            ],
             ..BingoBoard::default()
         };
 
@@ -296,7 +304,12 @@ mod tests {
 
             // 1 2
             // 3 4
-            board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+            board: vec![
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(4),
+            ],
             ..BingoBoard::default()
         };
 
@@ -314,7 +327,12 @@ mod tests {
 
             // 1 2
             // 3 4
-            board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+            board: vec![
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(4),
+            ],
             ..BingoBoard::default()
         };
 
@@ -326,7 +344,6 @@ mod tests {
         assert_eq!(board.winning_number, Some(2));
     }
 
-
     #[test]
     fn bingo_board_checks_for_a_winning_row() {
         let mut board = BingoBoard {
@@ -335,7 +352,12 @@ mod tests {
 
             // 1 2
             // 3 4
-            board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+            board: vec![
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(4),
+            ],
             ..BingoBoard::default()
         };
 
@@ -352,7 +374,12 @@ mod tests {
 
             // 1 2
             // 3 4
-            board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+            board: vec![
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(4),
+            ],
             ..BingoBoard::default()
         };
 
@@ -373,11 +400,31 @@ mod tests {
             // 16 17 18 19 20
             // 21 22 23 24 25
             board: vec![
-                BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4), BingoCell::from(5),
-                BingoCell::from(6), BingoCell::from(7), BingoCell::from(8), BingoCell::from(9), BingoCell::from(10),
-                BingoCell::from(11), BingoCell::from(12), BingoCell::from(13), BingoCell::from(14), BingoCell::from(15),
-                BingoCell::from(16), BingoCell::from(17), BingoCell::from(18), BingoCell::from(19), BingoCell::from(20),
-                BingoCell::from(21), BingoCell::from(22), BingoCell::from(23), BingoCell::from(24), BingoCell::from(25),
+                BingoCell::from(1),
+                BingoCell::from(2),
+                BingoCell::from(3),
+                BingoCell::from(4),
+                BingoCell::from(5),
+                BingoCell::from(6),
+                BingoCell::from(7),
+                BingoCell::from(8),
+                BingoCell::from(9),
+                BingoCell::from(10),
+                BingoCell::from(11),
+                BingoCell::from(12),
+                BingoCell::from(13),
+                BingoCell::from(14),
+                BingoCell::from(15),
+                BingoCell::from(16),
+                BingoCell::from(17),
+                BingoCell::from(18),
+                BingoCell::from(19),
+                BingoCell::from(20),
+                BingoCell::from(21),
+                BingoCell::from(22),
+                BingoCell::from(23),
+                BingoCell::from(24),
+                BingoCell::from(25),
             ],
             ..BingoBoard::default()
         };
@@ -428,11 +475,31 @@ mod tests {
             // 22 11 13  6  5
             //  2  0 12  3  7
             board: vec![
-                BingoCell::from(14), BingoCell::from(21), BingoCell::from(17), BingoCell::from(24), BingoCell::from(4),
-                BingoCell::from(10), BingoCell::from(16), BingoCell::from(15), BingoCell::from(9), BingoCell::from(19),
-                BingoCell::from(18), BingoCell::from(8), BingoCell::from(23), BingoCell::from(26), BingoCell::from(20),
-                BingoCell::from(22), BingoCell::from(11), BingoCell::from(13), BingoCell::from(6), BingoCell::from(5),
-                BingoCell::from(2), BingoCell::from(0), BingoCell::from(12), BingoCell::from(3), BingoCell::from(7),
+                BingoCell::from(14),
+                BingoCell::from(21),
+                BingoCell::from(17),
+                BingoCell::from(24),
+                BingoCell::from(4),
+                BingoCell::from(10),
+                BingoCell::from(16),
+                BingoCell::from(15),
+                BingoCell::from(9),
+                BingoCell::from(19),
+                BingoCell::from(18),
+                BingoCell::from(8),
+                BingoCell::from(23),
+                BingoCell::from(26),
+                BingoCell::from(20),
+                BingoCell::from(22),
+                BingoCell::from(11),
+                BingoCell::from(13),
+                BingoCell::from(6),
+                BingoCell::from(5),
+                BingoCell::from(2),
+                BingoCell::from(0),
+                BingoCell::from(12),
+                BingoCell::from(3),
+                BingoCell::from(7),
             ],
             ..BingoBoard::default()
         };
@@ -462,7 +529,12 @@ mod tests {
 
                 // 1 2
                 // 3 4
-                board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+                board: vec![
+                    BingoCell::from(1),
+                    BingoCell::from(2),
+                    BingoCell::from(3),
+                    BingoCell::from(4),
+                ],
                 ..BingoBoard::default()
             },
             BingoBoard {
@@ -471,14 +543,33 @@ mod tests {
 
                 // 2 3
                 // 4 1
-                board: vec![BingoCell::from(2), BingoCell::from(3), BingoCell::from(4), BingoCell::from(1)],
+                board: vec![
+                    BingoCell::from(2),
+                    BingoCell::from(3),
+                    BingoCell::from(4),
+                    BingoCell::from(1),
+                ],
                 ..BingoBoard::default()
             },
         ]);
 
         tournament.call(1);
-        assert!(tournament.0.get(0).unwrap().board.get(0).unwrap().is_marked());
-        assert!(tournament.0.get(1).unwrap().board.get(3).unwrap().is_marked());
+        assert!(tournament
+            .0
+            .get(0)
+            .unwrap()
+            .board
+            .get(0)
+            .unwrap()
+            .is_marked());
+        assert!(tournament
+            .0
+            .get(1)
+            .unwrap()
+            .board
+            .get(3)
+            .unwrap()
+            .is_marked());
     }
 
     #[test]
@@ -490,7 +581,12 @@ mod tests {
 
                 // 1 2
                 // 3 4
-                board: vec![BingoCell::from(1), BingoCell::from(2), BingoCell::from(3), BingoCell::from(4)],
+                board: vec![
+                    BingoCell::from(1),
+                    BingoCell::from(2),
+                    BingoCell::from(3),
+                    BingoCell::from(4),
+                ],
                 ..BingoBoard::default()
             },
             BingoBoard {
@@ -499,7 +595,12 @@ mod tests {
 
                 // 2 3
                 // 4 1
-                board: vec![BingoCell::from(2), BingoCell::from(3), BingoCell::from(4), BingoCell::from(1)],
+                board: vec![
+                    BingoCell::from(2),
+                    BingoCell::from(3),
+                    BingoCell::from(4),
+                    BingoCell::from(1),
+                ],
                 ..BingoBoard::default()
             },
         ]);
@@ -532,36 +633,64 @@ mod tests {
         let (calls, boards) = parse_input(&doc.lines(), 2);
         assert_eq!(calls, vec![1, 2, 3, 4]);
         assert_eq!(boards.len(), 2);
-        assert_eq!(boards.get(0).unwrap().board.get(0).unwrap().clone(), BingoCell(1, false));
-        assert_eq!(boards.get(0).unwrap().board.get(1).unwrap().clone(), BingoCell(2, false));
-        assert_eq!(boards.get(0).unwrap().board.get(2).unwrap().clone(), BingoCell(3, false));
-        assert_eq!(boards.get(0).unwrap().board.get(3).unwrap().clone(), BingoCell(4, false));
-        assert_eq!(boards.get(1).unwrap().board.get(0).unwrap().clone(), BingoCell(4, false));
-        assert_eq!(boards.get(1).unwrap().board.get(1).unwrap().clone(), BingoCell(5, false));
-        assert_eq!(boards.get(1).unwrap().board.get(2).unwrap().clone(), BingoCell(6, false));
-        assert_eq!(boards.get(1).unwrap().board.get(3).unwrap().clone(), BingoCell(7, false));
+        assert_eq!(
+            boards.get(0).unwrap().board.get(0).unwrap().clone(),
+            BingoCell(1, false)
+        );
+        assert_eq!(
+            boards.get(0).unwrap().board.get(1).unwrap().clone(),
+            BingoCell(2, false)
+        );
+        assert_eq!(
+            boards.get(0).unwrap().board.get(2).unwrap().clone(),
+            BingoCell(3, false)
+        );
+        assert_eq!(
+            boards.get(0).unwrap().board.get(3).unwrap().clone(),
+            BingoCell(4, false)
+        );
+        assert_eq!(
+            boards.get(1).unwrap().board.get(0).unwrap().clone(),
+            BingoCell(4, false)
+        );
+        assert_eq!(
+            boards.get(1).unwrap().board.get(1).unwrap().clone(),
+            BingoCell(5, false)
+        );
+        assert_eq!(
+            boards.get(1).unwrap().board.get(2).unwrap().clone(),
+            BingoCell(6, false)
+        );
+        assert_eq!(
+            boards.get(1).unwrap().board.get(3).unwrap().clone(),
+            BingoCell(7, false)
+        );
     }
 
     #[test]
     fn it_parses_test_input() {
         let filename = "src/day4/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let (calls, boards) = parse_input(&lines, 5);
-        assert_eq!(calls, vec![7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1]);
+        assert_eq!(
+            calls,
+            vec![
+                7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8,
+                19, 3, 26, 1
+            ]
+        );
         assert_eq!(boards.len(), 3);
     }
-
 
     #[test]
     fn part1_works() {
         let part1_file = "src/day4/test.txt";
 
-        let contents = fs::read_to_string(part1_file)
-            .expect("Something went wrong reading the file");
+        let contents =
+            fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let (calls, bingo_boards) = parse_input(&lines, 5);
@@ -583,8 +712,8 @@ mod tests {
     fn part2_works() {
         let part2_file = "src/day4/test.txt";
 
-        let contents = fs::read_to_string(part2_file)
-            .expect("Something went wrong reading the file");
+        let contents =
+            fs::read_to_string(part2_file).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let (calls, bingo_boards) = parse_input(&lines, 5);
@@ -592,7 +721,12 @@ mod tests {
 
         for call in calls {
             let winners = tournament.call(call);
-            println!("call: {} winners: {} total: {}", call, winners, bingo_boards.len() as u32);
+            println!(
+                "call: {} winners: {} total: {}",
+                call,
+                winners,
+                bingo_boards.len() as u32
+            );
             if winners == bingo_boards.len() as u32 {
                 let mut winning_boards = tournament.winners();
                 winning_boards.sort_by(|a, b| a.calls.cmp(&b.calls));

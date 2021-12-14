@@ -2,6 +2,8 @@
 
 _default:
     @just --list
+run:
+    cargo run
 
 check:
     circleci config validate

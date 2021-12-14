@@ -5,8 +5,7 @@ use std::str::Lines;
 pub fn run() {
     let file = "src/day7/input.txt";
 
-    let contents = fs::read_to_string(file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(file).expect("Something went wrong reading the file");
 
     let lines = contents.lines();
     let crabs = parse_input(lines.clone());
@@ -28,10 +27,9 @@ impl From<Vec<u32>> for Crabs {
 
 impl Crabs {
     fn simple_fuel_cost(&self, direction: u32) -> u32 {
-        self.0.iter()
-            .map(|&c| {
-                (c as i32 - direction as i32).abs() as u32
-            })
+        self.0
+            .iter()
+            .map(|&c| (c as i32 - direction as i32).abs() as u32)
             .sum()
     }
 
@@ -64,39 +62,40 @@ impl Crabs {
     }
 
     fn better_fuel_cost(&self, direction: u32) -> u32 {
-        self.0.iter()
+        self.0
+            .iter()
             .map(|&c| {
                 let num_steps = (c as i32 - direction as i32).abs() as u32;
                 // let cost = num_steps * (num_steps + 1)/2;
                 //println!("c: {} direction: {} num_steps: {} cost: {}", c, direction, num_steps, cost);
-                num_steps * (num_steps + 1)/2
+                num_steps * (num_steps + 1) / 2
             })
             .sum()
     }
 }
 
-
 fn parse_input(mut lines: Lines) -> Crabs {
-    Crabs::from(lines.next()
-        .unwrap()
-        .split(',')
-        .map(|n| { n.parse::<u32>().unwrap() })
-        .collect::<Vec<u32>>())
+    Crabs::from(
+        lines
+            .next()
+            .unwrap()
+            .split(',')
+            .map(|n| n.parse::<u32>().unwrap())
+            .collect::<Vec<u32>>(),
+    )
 }
-
 
 #[cfg(test)]
 mod tests {
     use std::fs;
 
-    use crate::day7::{Crabs, parse_input};
+    use crate::day7::{parse_input, Crabs};
 
     #[test]
     fn it_parses_test_input() {
         let filename = "src/day7/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let crabs = parse_input(lines.clone());
@@ -123,13 +122,11 @@ mod tests {
         assert_eq!(crabs.better_fuel_cost(5), 168);
     }
 
-
     #[test]
     fn part1_works() {
         let filename = "src/day7/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let crabs = parse_input(lines.clone());
@@ -141,8 +138,7 @@ mod tests {
     fn part2_works() {
         let filename = "src/day7/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let crabs = parse_input(lines.clone());

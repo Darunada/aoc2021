@@ -1,12 +1,11 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::fs;
-use std::str::{Lines};
+use std::str::Lines;
 
 pub fn run() {
     let file = "src/day6/input.txt";
 
-    let contents = fs::read_to_string(file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(file).expect("Something went wrong reading the file");
 
     let lines = contents.lines();
     let mut sea = parse_input(lines.clone());
@@ -78,13 +77,15 @@ impl Display for Sea {
 }
 
 fn parse_input(mut lines: Lines) -> Sea {
-    Sea::from(lines.next()
-        .unwrap()
-        .split(',')
-        .map(|n| { n.parse::<u32>().unwrap() })
-        .collect::<Vec<u32>>())
+    Sea::from(
+        lines
+            .next()
+            .unwrap()
+            .split(',')
+            .map(|n| n.parse::<u32>().unwrap())
+            .collect::<Vec<u32>>(),
+    )
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -96,8 +97,7 @@ mod tests {
     fn it_parses_test_input() {
         let filename = "src/day6/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let sea = parse_input(lines.clone());
@@ -136,8 +136,8 @@ mod tests {
     fn part1_works() {
         let part1_file = "src/day6/test.txt";
 
-        let contents = fs::read_to_string(part1_file)
-            .expect("Something went wrong reading the file");
+        let contents =
+            fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let mut sea = parse_input(lines.clone());
@@ -153,16 +153,14 @@ mod tests {
             println!("Day {}: {}", i, sea);
         }
         assert_eq!(sea.population(), 5934);
-        panic!();
     }
-
 
     #[test]
     fn part2_works() {
         let part2_file = "src/day6/test.txt";
 
-        let contents = fs::read_to_string(part2_file)
-            .expect("Something went wrong reading the file");
+        let contents =
+            fs::read_to_string(part2_file).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let mut sea = parse_input(lines.clone());

@@ -4,18 +4,22 @@ use std::io::Error;
 
 use std::str::{FromStr, Lines};
 
-
 // too low 1216568
 pub fn run() {
     let part1_file = "src/day3/input.txt";
 
-    let contents = fs::read_to_string(part1_file)
-        .expect("Something went wrong reading the file");
+    let contents = fs::read_to_string(part1_file).expect("Something went wrong reading the file");
 
     let lines = contents.lines();
     let report = parse_report(&lines);
-    println!("part 1: {}", PowerConsumption::analyze(&report, 12).power_consumption());
-    println!("part 2: {}", LifeSupportRating::analyze(&report, 12).life_support_rating());
+    println!(
+        "part 1: {}",
+        PowerConsumption::analyze(&report, 12).power_consumption()
+    );
+    println!(
+        "part 2: {}",
+        LifeSupportRating::analyze(&report, 12).life_support_rating()
+    );
 }
 
 #[derive(Clone, PartialEq)]
@@ -37,12 +41,10 @@ impl FromStr for ReportLine {
             .enumerate()
             .map(|(_i, c)| c.to_string().parse::<usize>().unwrap())
             .enumerate()
-            .map(|(i, c)| {
-                match c {
-                    0 => 0 << i,
-                    1 => 1 << i,
-                    _ => panic!("Unexpected char while parsing"),
-                }
+            .map(|(i, c)| match c {
+                0 => 0 << i,
+                1 => 1 << i,
+                _ => panic!("Unexpected char while parsing"),
             })
             .for_each(|mask| {
                 parsed |= mask;
@@ -75,7 +77,7 @@ struct PowerConsumption(GammaRate, EpsilonRate);
 
 impl PowerConsumption {
     fn power_consumption(&self) -> usize {
-        self.0.0 * self.1.0
+        self.0 .0 * self.1 .0
     }
 
     fn analyze(diagnostic_report: &[ReportLine], bit_width: u32) -> PowerConsumption {
@@ -101,7 +103,7 @@ struct LifeSupportRating(OxygenRating, Co2Rating);
 
 impl LifeSupportRating {
     fn life_support_rating(&self) -> usize {
-        self.0.0 * self.1.0
+        self.0 .0 * self.1 .0
     }
 
     fn analyze(diagnostic_report: &[ReportLine], bit_width: u32) -> LifeSupportRating {
@@ -121,19 +123,24 @@ impl LifeSupportRating {
 
                 if ones >= zeros {
                     // keep values with 1 in position
-                    oxygen_rating = oxygen_rating.into_iter().filter(|line| {
-                        let index = 0x1 << bit;
-                        (line.0 & index) > 0
-                    }).collect();
+                    oxygen_rating = oxygen_rating
+                        .into_iter()
+                        .filter(|line| {
+                            let index = 0x1 << bit;
+                            (line.0 & index) > 0
+                        })
+                        .collect();
                 } else {
                     // keep values with 0 in position
-                    oxygen_rating = oxygen_rating.into_iter().filter(|line| {
-                        let index = 0x1 << bit;
-                        (line.0 & index) == 0
-                    }).collect();
+                    oxygen_rating = oxygen_rating
+                        .into_iter()
+                        .filter(|line| {
+                            let index = 0x1 << bit;
+                            (line.0 & index) == 0
+                        })
+                        .collect();
                 }
             }
-
 
             if co2_rating.len() > 1 {
                 let total = co2_rating.len() as u32;
@@ -141,21 +148,30 @@ impl LifeSupportRating {
                 let zeros = total - ones;
                 if ones >= zeros {
                     // keep values with 0 in position
-                    co2_rating = co2_rating.into_iter().filter(|line| {
-                        let index = 0x1 << bit;
-                        (line.0 & index) == 0
-                    }).collect();
+                    co2_rating = co2_rating
+                        .into_iter()
+                        .filter(|line| {
+                            let index = 0x1 << bit;
+                            (line.0 & index) == 0
+                        })
+                        .collect();
                 } else {
                     // keep values with 1 in position
-                    co2_rating = co2_rating.into_iter().filter(|line| {
-                        let index = 0x1 << bit;
-                        (line.0 & index) > 0
-                    }).collect();
+                    co2_rating = co2_rating
+                        .into_iter()
+                        .filter(|line| {
+                            let index = 0x1 << bit;
+                            (line.0 & index) > 0
+                        })
+                        .collect();
                 }
             }
         }
 
-        LifeSupportRating(OxygenRating(oxygen_rating.get(0).unwrap().0), Co2Rating(co2_rating.get(0).unwrap().0))
+        LifeSupportRating(
+            OxygenRating(oxygen_rating.get(0).unwrap().0),
+            Co2Rating(co2_rating.get(0).unwrap().0),
+        )
     }
 }
 
@@ -168,13 +184,12 @@ fn parse_report(diagnostic_report: &Lines) -> Vec<ReportLine> {
 
 fn ones_at_position(report: &[ReportLine], bit_position: u32) -> u32 {
     let mut ones: u32 = 0;
-    report.iter()
-        .for_each(|line| {
-            let index = 0x1 << bit_position;
-            if (line.0 & index) > 0 {
-                ones += 1;
-            }
-        });
+    report.iter().for_each(|line| {
+        let index = 0x1 << bit_position;
+        if (line.0 & index) > 0 {
+            ones += 1;
+        }
+    });
 
     ones
 }
@@ -183,7 +198,10 @@ fn ones_at_position(report: &[ReportLine], bit_position: u32) -> u32 {
 mod tests {
     use std::fs;
 
-    use crate::day3::{Co2Rating, EpsilonRate, GammaRate, LifeSupportRating, OxygenRating, parse_report, PowerConsumption, ReportLine};
+    use crate::day3::{
+        parse_report, Co2Rating, EpsilonRate, GammaRate, LifeSupportRating, OxygenRating,
+        PowerConsumption, ReportLine,
+    };
 
     #[test]
     fn it_parses_report_lines() {
@@ -220,8 +238,7 @@ mod tests {
     fn test_power_consumption_works() {
         let filename = "src/day3/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let report = parse_report(&lines);
@@ -236,8 +253,7 @@ mod tests {
     fn test_life_support_works() {
         let filename = "src/day3/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let report = parse_report(&lines);
@@ -252,8 +268,7 @@ mod tests {
     fn part1_works() {
         let filename = "src/day3/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let report = parse_report(&lines);
@@ -265,8 +280,7 @@ mod tests {
     fn part2_works() {
         let filename = "src/day3/test.txt";
 
-        let contents = fs::read_to_string(filename)
-            .expect("Something went wrong reading the file");
+        let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
         let lines = contents.lines();
         let report = parse_report(&lines);
